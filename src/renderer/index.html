@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self';" />
+<title>Homework Tracker</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">📚</div>
+        <div class="brand-text">
+          <h1>Homework</h1>
+          <span>Tracker</span>
+        </div>
+      </div>
+
+      <div class="progress-card">
+        <div class="progress-ring-wrap">
+          <svg class="progress-ring" width="88" height="88" viewBox="0 0 88 88">
+            <circle class="ring-bg" cx="44" cy="44" r="38"></circle>
+            <circle class="ring-fg" id="ringFg" cx="44" cy="44" r="38"></circle>
+          </svg>
+          <div class="progress-ring-label" id="progressPercent">0%</div>
+        </div>
+        <div class="progress-meta">
+          <div class="progress-title">Overall Progress</div>
+          <div class="progress-sub" id="progressSub">0 of 0 done</div>
+        </div>
+      </div>
+
+      <div class="stat-grid">
+        <div class="stat-chip stat-pending">
+          <span class="stat-num" id="statPending">0</span>
+          <span class="stat-label">Pending</span>
+        </div>
+        <div class="stat-chip stat-overdue">
+          <span class="stat-num" id="statOverdue">0</span>
+          <span class="stat-label">Overdue</span>
+        </div>
+        <div class="stat-chip stat-today">
+          <span class="stat-num" id="statToday">0</span>
+          <span class="stat-label">Today</span>
+        </div>
+        <div class="stat-chip stat-done">
+          <span class="stat-num" id="statDone">0</span>
+          <span class="stat-label">Done</span>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-section-head">
+          <span>Subjects</span>
+          <button class="icon-btn small" id="addSubjectBtn" title="Add subject">+</button>
+        </div>
+        <ul class="subject-list" id="subjectList"></ul>
+      </div>
+
+      <div class="sidebar-footer">
+        <button class="ghost-btn" id="clearCompletedBtn">Clear completed</button>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+      <header class="topbar">
+        <div class="search-wrap">
+          <span class="search-icon">🔎</span>
+          <input type="text" id="searchInput" placeholder="Search homework..." />
+        </div>
+
+        <div class="topbar-controls">
+          <select id="sortSelect" class="select">
+            <option value="due">Sort by due date</option>
+            <option value="priority">Sort by priority</option>
+            <option value="subject">Sort by subject</option>
+            <option value="created">Sort by newest</option>
+          </select>
+          <button class="primary-btn" id="newTaskBtn">
+            <span class="plus">＋</span> New Homework
+          </button>
+        </div>
+      </header>
+
+      <div class="filter-bar" id="filterBar">
+        <button class="filter-pill active" data-filter="all">All</button>
+        <button class="filter-pill" data-filter="pending">Pending</button>
+        <button class="filter-pill" data-filter="overdue">Overdue</button>
+        <button class="filter-pill" data-filter="completed">Completed</button>
+      </div>
+
+      <div class="task-scroll" id="taskScroll">
+        <div id="taskGroups"></div>
+        <div class="empty-state" id="emptyState">
+          <div class="empty-emoji">🌤️</div>
+          <h2>Nothing here yet</h2>
+          <p>Add your first assignment and stay ahead of deadlines.</p>
+          <button class="primary-btn" id="emptyAddBtn"><span class="plus">＋</span> New Homework</button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Task Modal -->
+  <div class="modal-overlay" id="taskModalOverlay">
+    <div class="modal">
+      <div class="modal-head">
+        <h2 id="modalTitle">New Homework</h2>
+        <button class="icon-btn" id="closeModalBtn">✕</button>
+      </div>
+
+      <form id="taskForm">
+        <input type="hidden" id="taskId" />
+
+        <div class="field">
+          <label for="taskTitle">Title</label>
+          <input type="text" id="taskTitle" placeholder="e.g. Chapter 5 problem set" required maxlength="120" />
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="taskSubject">Subject</label>
+            <select id="taskSubject"></select>
+          </div>
+          <div class="field">
+            <label for="taskDue">Due date</label>
+            <input type="date" id="taskDue" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Priority</label>
+          <div class="segmented" id="prioritySegment">
+            <button type="button" class="segment low" data-priority="low">Low</button>
+            <button type="button" class="segment medium active" data-priority="medium">Medium</button>
+            <button type="button" class="segment high" data-priority="high">High</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="taskNotes">Notes</label>
+          <textarea id="taskNotes" rows="3" placeholder="Any extra details..." maxlength="500"></textarea>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="ghost-btn" id="cancelTaskBtn">Cancel</button>
+          <button type="submit" class="primary-btn" id="saveTaskBtn">Save Homework</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Subject Modal -->
+  <div class="modal-overlay" id="subjectModalOverlay">
+    <div class="modal small">
+      <div class="modal-head">
+        <h2>New Subject</h2>
+        <button class="icon-btn" id="closeSubjectModalBtn">✕</button>
+      </div>
+      <form id="subjectForm">
+        <div class="field">
+          <label for="subjectName">Subject name</label>
+          <input type="text" id="subjectName" placeholder="e.g. Chemistry" required maxlength="40" />
+        </div>
+        <div class="field">
+          <label>Color</label>
+          <div class="color-swatches" id="colorSwatches"></div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="ghost-btn" id="cancelSubjectBtn">Cancel</button>
+          <button type="submit" class="primary-btn">Add Subject</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="renderer.js"></script>
+</body>
+</html>

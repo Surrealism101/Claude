@@ -1,0 +1,31 @@
+{
+  "name": "homework-tracker",
+  "version": "1.0.0",
+  "description": "A sleek desktop app for tracking homework and assignments",
+  "main": "src/main.js",
+  "author": "",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder"
+  },
+  "devDependencies": {
+    "electron": "^31.3.1",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "com.homeworktracker.app",
+    "productName": "Homework Tracker",
+    "files": [
+      "src/**/*",
+      "build/**/*"
+    ],
+    "directories": {
+      "output": "dist"
+    },
+    "mac": { "category": "public.app-category.education" },
+    "win": { "target": "nsis" },
+    "linux": { "target": "AppImage", "category": "Education" }
+  }
+}
